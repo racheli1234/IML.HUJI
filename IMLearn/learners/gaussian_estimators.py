@@ -200,9 +200,15 @@ class MultivariateGaussian:
         """
         d = len(mu)
         m = len(X)
-        return ((-1*m*d)/2)*np.log(2*np.pi) - (m/2)*np.log(det(cov)) - 0.5*((X-mu)@inv(cov)@(X-mu).T).sum()
+        part1 = m * d * np.log(2 * np.pi)
+        part2 = m * np.log(det(cov))
+        part3 = ((X - mu) @ inv(cov) @ (X - mu).T).sum()
+        return -0.5 * (part1 + part2 + part3)
+
+    # ((-1*m*d)/2)*np.log(2*np.pi) - (m/2)*np.log(det(cov)) - 0.5*((X-mu)@inv(cov)@(X-mu).T).sum()
 
     def get_mu(self):
         return self.mu_
+
     def get_cov(self):
         return self.cov_
