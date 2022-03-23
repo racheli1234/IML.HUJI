@@ -6,7 +6,12 @@ import plotly.express as px
 import pandas as pd
 
 pio.templates.default = "simple_white"
-
+Q2_TITLE = "absolute distance between the estimated- and true value of the " \
+           "expectation, as a function of the sample size"
+Q2_X_TITLE = "m - number of samples"
+Q2_Y_TITLE = "r$|\hat\mu - \mu|$"
+Q3_TITLE = "empirical PDF function under the fitted model"
+Q5_TITLE = "Question 5: log likelihood of models with mu = [f1,0,f3,0] and the covariance from Q4"
 
 def test_univariate_gaussian():
     # Question 1 - Draw samples and print fitted model
@@ -18,23 +23,23 @@ def test_univariate_gaussian():
     print(uni.get_mu(), uni.get_var())
 
     # Question 2 - Empirically showing sample mean is consistent
-    ms = np.linspace(10, 1000, 100).astype(np.int64)
+    x_arr = np.linspace(10, 1000, 100).astype(np.int64)
     absolute_distance = []
 
     X = UnivariateGaussian()
     for i in range(1, 100):
         X.fit(samples[:i * 10])
         absolute_distance.append(abs(X.get_mu() - mu))
-    fig2 = go.Figure([go.Scatter(x=ms, y=absolute_distance)],
-                     layout=dict(title="absolute distance between the estimated- and true value of the "
-                                       "expectation, as a function of the sample size",
-                                 xaxis_title="m - number of samples",
-                                 yaxis_title="r$|\hat\mu - \mu|$"))
+    fig2 = go.Figure([go.Scatter(x=x_arr, y=absolute_distance)],
+                     layout=dict(title=Q2_TITLE,
+                                 xaxis_title=Q2_X_TITLE,
+                                 yaxis_title=Q2_Y_TITLE))
     fig2.show()
 
     # Question 3 - Plotting Empirical PDF of fitted model
     pdfs = uni.pdf(samples)
-    fig3 = px.scatter(x=samples, y=pdfs, title="empirical PDF function under the fitted model")
+    data = pd.DataFrame(dict(samples = samples, pdfs=pdfs))
+    fig3 = px.scatter(data, x="samples", y="pdfs", title=Q3_TITLE)
     fig3.show()
 
 
@@ -65,7 +70,7 @@ def test_multivariate_gaussian():
                 argmax = (values[i], values[j])
 
     go.Figure(data=go.Heatmap(x=values, y=values, z=log_likelihoods, colorbar=dict(title="log likelihood value")),
-              layout=dict(title="Question 5: log likelihood of models with mu = [f1,0,f3,0] and the covariance from Q4",
+              layout=dict(title=Q5_TITLE,
                           xaxis_title="f3",
                           yaxis_title="f1")).show()
 

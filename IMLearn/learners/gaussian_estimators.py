@@ -53,7 +53,12 @@ class UnivariateGaussian:
         estimator is either biased or unbiased). Then sets `self.fitted_` attribute to `True`
         """
         self.mu_ = np.mean(X)
-        self.var_ = np.var(X)
+        s = ((X-self.mu_)**2).sum() ####check
+        m = len(X)
+        if self.biased_:
+            self.var_ = s/m
+        elif not self.biased_:
+            self.var_ = s/(m-1)
         self.fitted_ = True
         return self
 
@@ -98,7 +103,7 @@ class UnivariateGaussian:
         log_likelihood: float
             log-likelihood calculated
         """
-        np.log((np.exp(-np.sum((X - mu) ** 2) / (2 * sigma))) / ((2 * np.pi * sigma) ** (len(X) / 2)))
+        return np.log((np.exp(-np.sum((X - mu) ** 2) / (2 * sigma))) / ((2 * np.pi * sigma) ** (len(X) / 2)))
 
     def get_mu(self):
         return self.mu_
@@ -202,10 +207,8 @@ class MultivariateGaussian:
         m = len(X)
         part1 = m * d * np.log(2 * np.pi)
         part2 = m * np.log(det(cov))
-        part3 = ((X - mu) @ inv(cov) @ (X - mu).T).sum()
+        part3 = ((X - mu) @ inv(cov) * (X - mu)).sum()
         return -0.5 * (part1 + part2 + part3)
-
-    # ((-1*m*d)/2)*np.log(2*np.pi) - (m/2)*np.log(det(cov)) - 0.5*((X-mu)@inv(cov)@(X-mu).T).sum()
 
     def get_mu(self):
         return self.mu_
