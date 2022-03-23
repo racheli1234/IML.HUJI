@@ -57,7 +57,7 @@ class UnivariateGaussian:
         m = len(X)
         if self.biased_:
             self.var_ = s/m
-        elif not self.biased_:
+        else:
             self.var_ = s/(m-1)
         self.fitted_ = True
         return self
