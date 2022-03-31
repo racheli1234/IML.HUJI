@@ -7,6 +7,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import plotly.io as pio
+
 pio.templates.default = "simple_white"
 
 
@@ -23,7 +24,15 @@ def load_data(filename: str):
     Design matrix and response vector (prices) - either as a single
     DataFrame or a Tuple[DataFrame, Series]
     """
-    raise NotImplementedError()
+    df = pd.read_csv(filename)
+
+    df = pd.get_dummies(data=df, columns=['zipcode'], drop_first=True)
+    # drop the columns of id and date
+    df.drop(['id', 'date'], axis=1, inplace=True)
+    # drop rows of houses whose price is 0
+    df = df[df['price'] > 0]
+    y = df.pop('price')
+    return df, y
 
 
 def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") -> NoReturn:
@@ -43,19 +52,36 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
     output_path: str (default ".")
         Path to folder in which plots are saved
     """
-    raise NotImplementedError()
+
+    p_correlation = []
+    for col in X.columns:
+
+        correlation = y.cov(X[col]) / (np.sqrt(np.var(X[col]) * np.var(y))) #todo
+        p_correlation.append(correlation)
+        fig = go.Figure([go.Scatter(x=X[col], y=y, mode="markers")],
+                        layout=dict(title=f"correlation between {col} and response = {correlation}"))
+        fig.show()
+
+    # fig = go.Figure([go.Scatter(x=X.columns, y=p_correlation)],
+    #                 layout=dict(title="q2", xaxis_title="feature", yaxis_title="correlation between feature and "
+    #                                                                            "response"))
+    # fig.show()
 
 
 if __name__ == '__main__':
     np.random.seed(0)
     # Question 1 - Load and preprocessing of housing prices dataset
-    raise NotImplementedError()
+    X, y = load_data("C:\\Users\\Home\\Desktop\\studies\\IML\\IML.HUJI\\datasets\\house_prices.csv")
 
     # Question 2 - Feature evaluation with respect to response
-    raise NotImplementedError()
+    # feature_evaluation(X, y)
 
     # Question 3 - Split samples into training- and testing sets.
-    raise NotImplementedError()
+    train_X, train_y, test_X, test_y = split_train_test(X, y, .75)
+    # print("training: \n", split_train_test(X, y)[0])
+    # print("train y:\n", split_train_test(X, y)[1])
+    # print("test:\n",split_train_test(X, y)[2])
+    # print("test y:\n", split_train_test(X, y)[3])
 
     # Question 4 - Fit model over increasing percentages of the overall training data
     # For every percentage p in 10%, 11%, ..., 100%, repeat the following 10 times:
@@ -64,4 +90,8 @@ if __name__ == '__main__':
     #   3) Test fitted model over test set
     #   4) Store average and variance of loss over test set
     # Then plot average loss as function of training size with error ribbon of size (mean-2*std, mean+2*std)
-    raise NotImplementedError()
+    for p in range(10, 101):
+        samples = train_X.sample(frac=p/100, random_state=0)
+        sample_y = train_y.sample(frac=p/100, random_state=0)
+
+
