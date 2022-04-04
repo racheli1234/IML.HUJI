@@ -29,6 +29,8 @@ def load_data(filename: str):
     df = pd.get_dummies(data=df, columns=['zipcode'], drop_first=True)
     # drop the columns of id and date
     df.drop(['id', 'date'], axis=1, inplace=True)
+    df = df[df['bedrooms'] > 0]
+    df = df[df['bathrooms'] > 0]
     # drop rows of houses whose price is 0
     df = df[df['price'] > 0]
     y = df.pop('price')
@@ -55,17 +57,11 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
 
     p_correlation = []
     for col in X.columns:
-
-        correlation = y.cov(X[col]) / (np.sqrt(np.var(X[col]) * np.var(y))) #todo
+        correlation = y.cov(X[col]) / (np.sqrt(np.var(X[col]) * np.var(y)))  # todo
         p_correlation.append(correlation)
         fig = go.Figure([go.Scatter(x=X[col], y=y, mode="markers")],
                         layout=dict(title=f"correlation between {col} and response = {correlation}"))
         fig.show()
-
-    # fig = go.Figure([go.Scatter(x=X.columns, y=p_correlation)],
-    #                 layout=dict(title="q2", xaxis_title="feature", yaxis_title="correlation between feature and "
-    #                                                                            "response"))
-    # fig.show()
 
 
 if __name__ == '__main__':
@@ -78,10 +74,6 @@ if __name__ == '__main__':
 
     # Question 3 - Split samples into training- and testing sets.
     train_X, train_y, test_X, test_y = split_train_test(X, y, .75)
-    # print("training: \n", split_train_test(X, y)[0])
-    # print("train y:\n", split_train_test(X, y)[1])
-    # print("test:\n",split_train_test(X, y)[2])
-    # print("test y:\n", split_train_test(X, y)[3])
 
     # Question 4 - Fit model over increasing percentages of the overall training data
     # For every percentage p in 10%, 11%, ..., 100%, repeat the following 10 times:
@@ -90,8 +82,41 @@ if __name__ == '__main__':
     #   3) Test fitted model over test set
     #   4) Store average and variance of loss over test set
     # Then plot average loss as function of training size with error ribbon of size (mean-2*std, mean+2*std)
+    lin_reg = LinearRegression()
+    losses_as_parameter_of_p = []
+    confidence_intervals_up = []
+    confidence_intervals_down = []
+
     for p in range(10, 101):
-        samples = train_X.sample(frac=p/100, random_state=0)
-        sample_y = train_y.sample(frac=p/100, random_state=0)
+        curr_losses = []
+        for i in range(10):
+            # sample p% samples
+            samples = train_X.sample(frac=p / 100, random_state=i)
+            sample_y = train_y.sample(frac=p / 100, random_state=i)
+            # fit the samples
+            lin_reg.fit(samples.values, sample_y.values)
+            # calculate MSE loss function
+            curr_losses.append(lin_reg.loss(test_X.values, test_y.values))
 
-
+        mean = np.mean(curr_losses)
+        std = np.std(curr_losses)
+        upper_CI = mean + 2 * std
+        lower_CI = mean - 2 * std
+        loss = sum(curr_losses) / len(curr_losses)
+        # add the loss and the confidence interval to the arrays
+        losses_as_parameter_of_p.append(loss)
+        confidence_intervals_up.append(upper_CI)
+        confidence_intervals_down.append(lower_CI)
+    x = np.linspace(10, 100)
+    fig = go.Figure([go.Scatter(x=x, y=losses_as_parameter_of_p, line=dict(color='rgb(0,100,80)'), mode='markers+lines',
+                                name='Average loss as function of training size'),
+                     go.Scatter(x=x,
+                                y=confidence_intervals_up,
+                                fill=None, fillcolor='rgba(0,100,80,0.2)', line=dict(color='rgba(255,255,255,0)'),
+                                hoverinfo="skip", showlegend=False),
+                     go.Scatter(x=x,
+                                y=confidence_intervals_down,
+                                fill='tonexty', fillcolor='rgba(0,100,80,0.2)', line=dict(color='rgba(255,255,255,0)'),
+                                hoverinfo="skip", showlegend=False)
+                     ])
+    fig.show()

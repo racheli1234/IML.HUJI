@@ -13,6 +13,7 @@ Q2_Y_TITLE = "r$|\hat\mu - \mu|$"
 Q3_TITLE = "empirical PDF function under the fitted model"
 Q5_TITLE = "Question 5: log likelihood of models with mu = [f1,0,f3,0] and the covariance from Q4"
 
+
 def test_univariate_gaussian():
     # Question 1 - Draw samples and print fitted model
     mu = 10
@@ -38,7 +39,7 @@ def test_univariate_gaussian():
 
     # Question 3 - Plotting Empirical PDF of fitted model
     pdfs = uni.pdf(samples)
-    data = pd.DataFrame(dict(samples = samples, pdfs=pdfs))
+    data = pd.DataFrame(dict(samples=samples, pdfs=pdfs))
     fig3 = px.scatter(data, x="samples", y="pdfs", title=Q3_TITLE)
     fig3.show()
 
