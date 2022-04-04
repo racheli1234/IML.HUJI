@@ -57,11 +57,12 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
 
     p_correlation = []
     for col in X.columns:
-        correlation = y.cov(X[col]) / (np.sqrt(np.var(X[col]) * np.var(y)))  # todo
+        correlation = y.cov(X[col]) / (np.sqrt(np.var(X[col]) * np.var(y)))
         p_correlation.append(correlation)
         fig = go.Figure([go.Scatter(x=X[col], y=y, mode="markers")],
                         layout=dict(title=f"correlation between {col} and response = {correlation}"))
-        fig.show()
+        pio.write_image(fig, output_path+f"/{col}.png")
+        # fig.show()
 
 
 if __name__ == '__main__':
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     X, y = load_data("C:\\Users\\Home\\Desktop\\studies\\IML\\IML.HUJI\\datasets\\house_prices.csv")
 
     # Question 2 - Feature evaluation with respect to response
-    # feature_evaluation(X, y)
+    feature_evaluation(X, y)
 
     # Question 3 - Split samples into training- and testing sets.
     train_X, train_y, test_X, test_y = split_train_test(X, y, .75)

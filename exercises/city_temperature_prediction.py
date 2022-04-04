@@ -49,7 +49,8 @@ if __name__ == '__main__':
     months = israel.groupby('Month').agg({"Temp": "std"})
     fig1 = px.bar(data_frame=months, y="Temp", barmode="group", title='STD of temperature in Israel as a function of '
                                                                       'month')
-    # fig1.show()
+    fig1.update_yaxes(title_text="std")
+    fig1.show()
 
     # Question 3 - Exploring differences between countries
     months_all = X.groupby(['Month', 'Country']).Temp.agg(["std", "mean"]).reset_index()
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     fig4 = px.bar(x=degs, y=losses, title='Test error as a function of the value of k')
     fig4.update_xaxes(title_text='k')
     fig4.update_yaxes(title_text='The test error')
-    fig4.show()
+    # fig4.show()
 
     # Question 5 - Evaluating fitted model on different countries
     poly_deg_k_israel = PolynomialFitting(5)
@@ -85,4 +86,4 @@ if __name__ == '__main__':
                                                               'other countries')
     fig5.update_xaxes(title_text='country')
     fig5.update_yaxes(title_text='error')
-    fig5.show()
+    # fig5.show()
