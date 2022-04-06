@@ -61,7 +61,7 @@ def feature_evaluation(X: pd.DataFrame, y: pd.Series, output_path: str = ".") ->
         p_correlation.append(correlation)
         fig = go.Figure([go.Scatter(x=X[col], y=y, mode="markers")],
                         layout=dict(title=f"correlation between {col} and response = {correlation}"))
-        pio.write_image(fig, output_path+f"/{col}.png")
+        pio.write_image(fig, output_path + f"/{col}.png")
         # fig.show()
 
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     X, y = load_data("C:\\Users\\Home\\Desktop\\studies\\IML\\IML.HUJI\\datasets\\house_prices.csv")
 
     # Question 2 - Feature evaluation with respect to response
-    feature_evaluation(X, y)
+    feature_evaluation(X, y, "C:\\Users\\Home\\Desktop\\studies\\IML\\IML.HUJI\\graphs")
 
     # Question 3 - Split samples into training- and testing sets.
     train_X, train_y, test_X, test_y = split_train_test(X, y, .75)
@@ -95,9 +95,9 @@ if __name__ == '__main__':
             samples = train_X.sample(frac=p / 100, random_state=i)
             sample_y = train_y.sample(frac=p / 100, random_state=i)
             # fit the samples
-            lin_reg.fit(samples.values, sample_y.values)
+            lin_reg._fit(samples.values, sample_y.values)
             # calculate MSE loss function
-            curr_losses.append(lin_reg.loss(test_X.values, test_y.values))
+            curr_losses.append(lin_reg._loss(test_X.values, test_y.values))
 
         mean = np.mean(curr_losses)
         std = np.std(curr_losses)

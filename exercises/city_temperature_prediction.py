@@ -50,7 +50,7 @@ if __name__ == '__main__':
     fig1 = px.bar(data_frame=months, y="Temp", barmode="group", title='STD of temperature in Israel as a function of '
                                                                       'month')
     fig1.update_yaxes(title_text="std")
-    fig1.show()
+    # fig1.show()
 
     # Question 3 - Exploring differences between countries
     months_all = X.groupby(['Month', 'Country']).Temp.agg(["std", "mean"]).reset_index()
@@ -65,8 +65,8 @@ if __name__ == '__main__':
     degs = np.linspace(1, 10, 10)
     for k in range(1, 11):
         poly = PolynomialFitting(k)
-        poly.fit(israel_train_X.values, israel_train_y.values)
-        losses.append(round(poly.loss(israel_test_X.values, israel_test_y.values), 2))
+        poly._fit(israel_train_X.values, israel_train_y.values)
+        losses.append(round(poly._loss(israel_test_X.values, israel_test_y.values), 2))
     print(losses)
     fig4 = px.bar(x=degs, y=losses, title='Test error as a function of the value of k')
     fig4.update_xaxes(title_text='k')
@@ -75,13 +75,14 @@ if __name__ == '__main__':
 
     # Question 5 - Evaluating fitted model on different countries
     poly_deg_k_israel = PolynomialFitting(5)
-    poly_deg_k_israel.fit(israel["DayOfYear"], israel["Temp"])
+    poly_deg_k_israel._fit(israel["DayOfYear"], israel["Temp"])
     countries_losses = []
-    countries_list = X['Country'].unique().tolist()
-    countries_list.remove('Israel')
+    countries_list = X[X['Country'] != 'Israel'].Country.unique()
+    # countries_list = X['Country'].unique().tolist()
+    # countries_list.remove('Israel')
     for country in countries_list:
         cur_country = X[X['Country'] == country]
-        countries_losses.append(poly_deg_k_israel.loss(cur_country['DayOfYear'], cur_country['Temp']))
+        countries_losses.append(poly_deg_k_israel._loss(cur_country['DayOfYear'], cur_country['Temp']))
     fig5 = px.bar(x=countries_list, y=countries_losses, title='The k-deg polynomial model’s error over each of the '
                                                               'other countries')
     fig5.update_xaxes(title_text='country')
