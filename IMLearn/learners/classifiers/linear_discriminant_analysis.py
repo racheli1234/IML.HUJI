@@ -1,5 +1,7 @@
 from typing import NoReturn
+# from ...base import BaseEstimator
 from ...base import BaseEstimator
+
 import numpy as np
 from numpy.linalg import det, inv
 
@@ -25,6 +27,7 @@ class LDA(BaseEstimator):
     self.pi_: np.ndarray of shape (n_classes)
         The estimated class probabilities. To be set in `GaussianNaiveBayes.fit`
     """
+
     def __init__(self):
         """
         Instantiate an LDA classifier
@@ -46,7 +49,50 @@ class LDA(BaseEstimator):
         y : ndarray of shape (n_samples, )
             Responses of input data to fit to
         """
-        raise NotImplementedError()
+        m = len(y)
+
+        # fit classes
+        self.classes_ = np.unique(y)
+        n_k = [np.sum(y == k) for k in self.classes_]  # |{i:y_i=k}| for each label k
+        K = len(self.classes_)
+
+        # fit mu
+        self.fit_mu(X, K, n_k, y)
+
+        # fit sigma matrix - unbiased
+        self.fit_cov_matrix(K, X, m, y)
+
+        # fit cov_inv matrix
+        self._cov_inv = inv(self.cov_)
+
+        # fit pi
+        self.pi_ = np.zeros(K)
+        for i in range(len(self.classes_)):
+            self.pi_[i] = n_k[i] / m
+
+        self.fitted_ = True
+
+    def fit_cov_matrix(self, K, X, m, y):
+        self.cov_ = np.zeros((X.shape[1], X.shape[1]))
+        for i in range(m):
+            k_index = np.where(self.classes_ == y[i])
+            mu_yi_MLE = self.mu_[k_index]
+            v = X[i] - mu_yi_MLE
+            self.cov_ += (np.outer(v, v) / m - K)
+
+    def fit_mu(self, X, k, n_k, y):
+        self.mu_ = np.zeros((k, X.shape[1]), dtype=np.int64)
+        for i, label in enumerate(self.classes_):
+            # # create a list of the indices i in which y[i] = current label
+            # y_relevant_rows = [i for i in range(len(y)) if y[i] == label]
+            # # select and sum the rows i in X when y[i] = current label
+            # X_relevant_rows = X[y_relevant_rows]
+
+            # select and sum the rows i in X when y[i] = current label
+            X_relevant_rows = X[y == label]
+            sum_relevant_x = np.sum(X_relevant_rows, axis=0)
+            # calculate the MLE for the current label and add it to self.mu
+            self.mu_[i] = sum_relevant_x / n_k[i]
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -62,7 +108,8 @@ class LDA(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
-        raise NotImplementedError()
+        # returns the argmax of each row of the likelihood matrix
+        np.argmax(self.likelihood(X), axis=1)
 
     def likelihood(self, X: np.ndarray) -> np.ndarray:
         """
@@ -82,7 +129,16 @@ class LDA(BaseEstimator):
         if not self.fitted_:
             raise ValueError("Estimator must first be fitted before calling `likelihood` function")
 
-        raise NotImplementedError()
+        m = len(X)
+        K = len(self.classes_)
+
+        likelihoods = []
+        for k in range(K):
+            a_k = self._cov_inv @ self.mu_[k]
+            b_k = np.log(self.pi_[k]) - self.mu_[k].T @ self._cov_inv @ self.mu_[k]
+            likelihoods.append(a_k.T @ X + b_k)
+
+        return np.array(likelihoods).T
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -102,4 +158,4 @@ class LDA(BaseEstimator):
             Performance under missclassification loss function
         """
         from ...metrics import misclassification_error
-        raise NotImplementedError()
+        return misclassification_error(y, self.predict(X))

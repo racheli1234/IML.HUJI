@@ -2,7 +2,6 @@ from IMLearn.learners.classifiers import Perceptron, LDA, GaussianNaiveBayes
 from typing import Tuple
 from utils import *
 import plotly.graph_objects as go
-import plotly.express as px
 from plotly.subplots import make_subplots
 from math import atan2, pi
 
@@ -110,6 +109,11 @@ def compare_gaussian_classifiers():
 
 
 if __name__ == '__main__':
-    np.random.seed(0)
-    run_perceptron()
+    # np.random.seed(0)
+    # run_perceptron()
     # compare_gaussian_classifiers()
+    lda = LDA()
+    X = np.array([[1, 2, 3, 4], [1, 2, 4, 3], [3, 5, 6, 4]])
+    y = np.array([9, 8, 7])
+    lda._fit(X, y)
+    print(lda.likelihood(X))
