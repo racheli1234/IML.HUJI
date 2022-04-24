@@ -41,7 +41,35 @@ class GaussianNaiveBayes(BaseEstimator):
         y : ndarray of shape (n_samples, )
             Responses of input data to fit to
         """
+        m = len(y)
 
+        # fit classes
+        self.classes_ = np.unique(y)
+        n_k = [np.sum(y == k) for k in self.classes_]  # |{i:y_i=k}| for each label k
+        K = len(self.classes_)
+
+        # fit mu
+        self.fit_mu(X, K, n_k, y)
+
+        # fit cov
+        vars = []
+        for index, k in enumerate(self.classes_):
+            X_relevant_rows = X[y == k]
+            kth_row_content = []
+            for i in range(len(X_relevant_rows)):
+                kth_row_content.append(np.square(X_relevant_rows[i] - self.mu_[k]))
+            vars.append(np.sum(np.array(kth_row_content)) / n_k[index])
+        self.vars_ = np.array(vars)
+
+        # fit pi
+        self.pi_ = np.zeros(K)
+        for i in range(len(self.classes_)):
+            self.pi_[i] = n_k[i] / m
+
+        self.fitted_ = True
+
+    def fit_mu(self, X, k, n_k, y):
+        pass
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -77,7 +105,7 @@ class GaussianNaiveBayes(BaseEstimator):
         if not self.fitted_:
             raise ValueError("Estimator must first be fitted before calling `likelihood` function")
 
-        raise NotImplementedError()
+
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """

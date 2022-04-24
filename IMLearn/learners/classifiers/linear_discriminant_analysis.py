@@ -25,7 +25,7 @@ class LDA(BaseEstimator):
         The inverse of the estimated features covariance. To be set in `LDA.fit`
 
     self.pi_: np.ndarray of shape (n_classes)
-        The estimated class probabilities. To be set in `GaussianNaiveBayes.fit`
+        The estimated class probabilities. To be set in `LDA.fit`
     """
 
     def __init__(self):
@@ -53,7 +53,7 @@ class LDA(BaseEstimator):
 
         # fit classes
         self.classes_ = np.unique(y)
-        n_k = [np.sum(y == k) for k in self.classes_]  # |{i:y_i=k}| for each label k
+        n_k = [np.sum(y == k) for k in self.classes_]  # |{i:y_i=k}| for each label k #TODO
         K = len(self.classes_)
 
         # fit mu
@@ -77,16 +77,12 @@ class LDA(BaseEstimator):
         for i in range(m):
             k_index = np.where(self.classes_ == y[i])
             mu_yi_MLE = self.mu_[k_index]
-            v = X[i] - mu_yi_MLE
-            self.cov_ += (np.outer(v, v) / m - K)
+            vec = X[i] - mu_yi_MLE
+            self.cov_ += (np.outer(vec, vec) / (m - K))
 
     def fit_mu(self, X, k, n_k, y):
-        self.mu_ = np.zeros((k, X.shape[1]), dtype=np.int64)
+        self.mu_ = np.zeros((k, X.shape[1]))
         for i, label in enumerate(self.classes_):
-            # # create a list of the indices i in which y[i] = current label
-            # y_relevant_rows = [i for i in range(len(y)) if y[i] == label]
-            # # select and sum the rows i in X when y[i] = current label
-            # X_relevant_rows = X[y_relevant_rows]
 
             # select and sum the rows i in X when y[i] = current label
             X_relevant_rows = X[y == label]
@@ -109,7 +105,8 @@ class LDA(BaseEstimator):
             Predicted responses of given samples
         """
         # returns the argmax of each row of the likelihood matrix
-        np.argmax(self.likelihood(X), axis=1)
+        index = np.argmax(self.likelihood(X), axis=1)
+        return self.classes_[index]
 
     def likelihood(self, X: np.ndarray) -> np.ndarray:
         """

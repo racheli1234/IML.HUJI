@@ -87,33 +87,29 @@ def compare_gaussian_classifiers():
     """
     for f in ["gaussian1.npy", "gaussian2.npy"]:
         # Load dataset
-        raise NotImplementedError()
+        X, y = load_dataset("../datasets/" + f)
 
         # Fit models and predict over training set
-        raise NotImplementedError()
-
-        # Plot a figure with two suplots, showing the Gaussian Naive Bayes predictions on the left and LDA predictions
-        # on the right. Plot title should specify dataset used and subplot titles should specify algorithm and accuracy
-        # Create subplots
-        from IMLearn.metrics import accuracy
-        raise NotImplementedError()
-
-        # Add traces for data-points setting symbols and colors
-        raise NotImplementedError()
-
-        # Add `X` dots specifying fitted Gaussians' means
-        raise NotImplementedError()
-
-        # Add ellipses depicting the covariances of the fitted Gaussians
-        raise NotImplementedError()
+        lda = LDA()
+        lda._fit(X, y)
+        #
+        # # Plot a figure with two suplots, showing the Gaussian Naive Bayes predictions on the left and LDA predictions
+        # # on the right. Plot title should specify dataset used and subplot titles should specify algorithm and accuracy
+        # # Create subplots
+        # from IMLearn.metrics import accuracy
+        # raise NotImplementedError()
+        #
+        # # Add traces for data-points setting symbols and colors
+        # raise NotImplementedError()
+        #
+        # # Add `X` dots specifying fitted Gaussians' means
+        # raise NotImplementedError()
+        #
+        # # Add ellipses depicting the covariances of the fitted Gaussians
+        # raise NotImplementedError()
 
 
 if __name__ == '__main__':
     # np.random.seed(0)
     # run_perceptron()
-    # compare_gaussian_classifiers()
-    lda = LDA()
-    X = np.array([[1, 2, 3, 4], [1, 2, 4, 3], [3, 5, 6, 4]])
-    y = np.array([9, 8, 7])
-    lda._fit(X, y)
-    print(lda.likelihood(X))
+    compare_gaussian_classifiers()
