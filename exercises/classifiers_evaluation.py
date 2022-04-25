@@ -107,25 +107,34 @@ def compare_gaussian_classifiers():
         fig = make_subplots(rows=1, cols=2,
                             subplot_titles=(f"model: Gaussian Naive Bayes estimator, accuracy: {gnb_acc}",
                                             f"model: LDA estimator, accuracy: {lda_acc}"))
-        fig.update_layout(title=f"Data Set: {f}")
+        fig.update_layout(title=rf"$\textbf{{Decision Boundaries Of Models - {f} Dataset}}$")
 
         # Add traces for data-points setting symbols and colors
-        models = [lda, gnb]
-        predictions = [lda_prediction, gnb_prediction]
-        symbols = np.array(["circle", "x", "square"])
+        models = [gnb, lda]
+        predictions = [gnb_prediction, lda_prediction]
+        symbols = np.array(["triangle-left", "circle", "square"])
 
         for i, p in enumerate(predictions):
             fig.add_trace(row=1, col=i + 1,
                           trace=go.Scatter(x=X[:, 0], y=X[:, 1], mode="markers",
                                            marker=dict(color=p, symbol=symbols[y], line=dict(color="black", width=1)),
                                            showlegend=False))
-        fig.show()
-        # # Add `X` dots specifying fitted Gaussians' means
-        # raise NotImplementedError()
-        #
-        # # Add ellipses depicting the covariances of the fitted Gaussians
-        # raise NotImplementedError()
 
+        # Add `X` dots specifying fitted Gaussians' means
+        for i, m in enumerate(models):
+            fig.add_trace(row=1, col=i + 1,
+                          trace=go.Scatter(x=m.mu_[:, 0], y=m.mu_[:, 1], mode="markers",
+                                           marker=dict(color="black", symbol="x", line=dict(color="black", width=1)),
+                                           showlegend=False))
+
+        # Add ellipses depicting the covariances of the fitted Gaussians
+        for i in range(3):
+            fig.add_trace(row=1, col=1,
+                          trace=get_ellipse(gnb.mu_[i], np.diag(gnb.vars_[i])))
+
+            fig.add_trace(row=1, col=2,
+                          trace=get_ellipse(lda.mu_[i], lda.cov_))
+        fig.show()
 
 if __name__ == '__main__':
     # np.random.seed(0)

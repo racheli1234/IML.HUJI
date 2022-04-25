@@ -52,7 +52,7 @@ class GaussianNaiveBayes(BaseEstimator):
         self.fit_mu(X, K, n_k, y)
 
         # fit cov
-        self.fit_cov_matrix(X, n_k, y)
+        self.fit_var_matrix(X, n_k, y)
 
         # fit pi
         self.pi_ = np.zeros(K)
@@ -61,7 +61,7 @@ class GaussianNaiveBayes(BaseEstimator):
 
         self.fitted_ = True
 
-    def fit_cov_matrix(self, X, n_k, y):
+    def fit_var_matrix(self, X, n_k, y):
         vars = []
         for index, k in enumerate(self.classes_):
             X_relevant_rows = X[y == k]
@@ -126,7 +126,7 @@ class GaussianNaiveBayes(BaseEstimator):
                 sigma_k_j = self.vars_[k][j]
                 mu_k_j = self.mu_[k][j]
                 part_2_list.append(
-                    (np.log(np.sqrt(2 * np.pi * sigma_k_j))) + (np.square((X[:, j] - mu_k_j) / sigma_k_j) / 2))
+                    (np.log(np.sqrt(2 * np.pi * sigma_k_j))) + ((np.square((X[:, j] - mu_k_j)) / sigma_k_j) / 2))
             part_2 = np.sum(np.array(part_2_list), axis=0)
             likelihoods.append(part_1 - part_2)
 
