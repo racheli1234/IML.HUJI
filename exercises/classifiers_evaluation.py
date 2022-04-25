@@ -92,16 +92,34 @@ def compare_gaussian_classifiers():
         # Fit models and predict over training set
         lda = LDA()
         lda._fit(X, y)
-        #
-        # # Plot a figure with two suplots, showing the Gaussian Naive Bayes predictions on the left and LDA predictions
-        # # on the right. Plot title should specify dataset used and subplot titles should specify algorithm and accuracy
-        # # Create subplots
-        # from IMLearn.metrics import accuracy
-        # raise NotImplementedError()
-        #
-        # # Add traces for data-points setting symbols and colors
-        # raise NotImplementedError()
-        #
+        lda_prediction = lda._predict(X)
+
+        gnb = GaussianNaiveBayes()
+        gnb._fit(X, y)
+        gnb_prediction = gnb._predict(X)
+
+        # Plot a figure with two suplots, showing the Gaussian Naive Bayes predictions on the left and LDA predictions
+        # on the right. Plot title should specify dataset used and subplot titles should specify algorithm and accuracy
+        # Create subplots
+        from IMLearn.metrics import accuracy
+        lda_acc = accuracy(y, lda_prediction)
+        gnb_acc = accuracy(y, gnb_prediction)
+        fig = make_subplots(rows=1, cols=2,
+                            subplot_titles=(f"model: Gaussian Naive Bayes estimator, accuracy: {gnb_acc}",
+                                            f"model: LDA estimator, accuracy: {lda_acc}"))
+        fig.update_layout(title=f"Data Set: {f}")
+
+        # Add traces for data-points setting symbols and colors
+        models = [lda, gnb]
+        predictions = [lda_prediction, gnb_prediction]
+        symbols = np.array(["circle", "x", "square"])
+
+        for i, p in enumerate(predictions):
+            fig.add_trace(row=1, col=i + 1,
+                          trace=go.Scatter(x=X[:, 0], y=X[:, 1], mode="markers",
+                                           marker=dict(color=p, symbol=symbols[y], line=dict(color="black", width=1)),
+                                           showlegend=False))
+        fig.show()
         # # Add `X` dots specifying fitted Gaussians' means
         # raise NotImplementedError()
         #

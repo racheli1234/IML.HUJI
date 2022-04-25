@@ -61,15 +61,11 @@ def accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     -------
     Accuracy of given predictions
     """
-    p = np.sum(y_pred > 0)
-    n = np.sum(y_pred < 0)
-    tp, tn = 0, 0
+    successes_counter = 0
     for i in range(len(y_true)):
-        if y_pred[i] > 0 and y_true[i] > 0:  # TODO what if something = 0?
-            tp += 1
-        if y_pred[i] < 0 and y_true[i] < 0:
-            tn += 1
-    return (tp + tn) / (p + n)
+        if y_true[i] == y_pred[i]:
+            successes_counter += 1
+    return successes_counter / len(y_true)
 
 
 def cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> float:

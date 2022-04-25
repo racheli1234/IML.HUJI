@@ -132,8 +132,8 @@ class LDA(BaseEstimator):
         likelihoods = []
         for k in range(K):
             a_k = self._cov_inv @ self.mu_[k]
-            b_k = np.log(self.pi_[k]) - self.mu_[k].T @ self._cov_inv @ self.mu_[k]
-            likelihoods.append(a_k.T @ X + b_k)
+            b_k = np.log(self.pi_[k]) - ((self.mu_[k].T @ self._cov_inv @ self.mu_[k])/2)
+            likelihoods.append((a_k @ X.T) + b_k)
 
         return np.array(likelihoods).T
 
@@ -155,4 +155,4 @@ class LDA(BaseEstimator):
             Performance under missclassification loss function
         """
         from ...metrics import misclassification_error
-        return misclassification_error(y, self.predict(X))
+        return misclassification_error(y, self._predict(X))
