@@ -68,7 +68,7 @@ class GaussianNaiveBayes(BaseEstimator):
             kth_row_content = []
             for i in range(len(X_relevant_rows)):
                 kth_row_content.append(np.square(X_relevant_rows[i] - self.mu_[k]))
-            vars.append(np.sum(np.array(kth_row_content), axis=0) / n_k[index])
+            vars.append(np.sum(np.array(kth_row_content), axis=0) / (n_k[index] - 1))
         self.vars_ = np.array(vars)
 
     def fit_mu(self, X, k, n_k, y):

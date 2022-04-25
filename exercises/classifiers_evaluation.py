@@ -52,7 +52,8 @@ def run_perceptron():
 
         # Plot figure of loss as function of fitting iteration
         fig = go.Figure([go.Scatter(x=np.arange(1, len(losses) + 1), y=np.array(losses))],
-                        layout=dict(title=n))
+                        layout=dict(title=f"Loss value as a function of the iteration over {n} Data",
+                                    xaxis_title="iteration", yaxis_title="loss"))
         fig.show()
 
 
@@ -137,6 +138,15 @@ def compare_gaussian_classifiers():
         fig.show()
 
 if __name__ == '__main__':
-    # np.random.seed(0)
+    np.random.seed(0)
+    import numpy as np
     # run_perceptron()
-    compare_gaussian_classifiers()
+    # compare_gaussian_classifiers()
+    S = {(0, 0), (1, 0), (2, 1), (3, 1), (4, 1), (5, 1), (6, 2), (7, 2)}
+    X = np.array([0,1,2,3,4,5,6,7])
+    y = np.array([0, 0, 1, 1, 1, 1, 2, 2])
+    l = LDA()
+    l._fit(X,y)
+    print("mu: ", l.mu_)
+    print("pi: ", l.pi_)
+
