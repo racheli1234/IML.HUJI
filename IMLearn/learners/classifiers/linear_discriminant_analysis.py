@@ -53,7 +53,7 @@ class LDA(BaseEstimator):
 
         # fit classes
         self.classes_ = np.unique(y)
-        n_k = [np.sum(y == k) for k in self.classes_]  # |{i:y_i=k}| for each label k #TODO
+        n_k = [np.sum(y == k) for k in self.classes_]  # |{i:y_i=k}| for each label k
         K = len(self.classes_)
 
         # fit mu
@@ -73,12 +73,6 @@ class LDA(BaseEstimator):
         self.fitted_ = True
 
     def fit_cov_matrix(self, K, X, m, y):
-        # self.cov_ = np.zeros((X.shape[1], X.shape[1]))
-        # for i in range(m):
-        #     k_index = np.where(self.classes_ == y[i])
-        #     mu_yi_MLE = self.mu_[k_index]
-        #     vec = X[i] - mu_yi_MLE
-        #     self.cov_ += (np.outer(vec, vec) / (m - K))
 
         temp_cov = []
         for i in range(m):
@@ -89,14 +83,7 @@ class LDA(BaseEstimator):
         self.cov_ = np.array(np.sum(temp_cov, axis=0))
 
     def fit_mu(self, X, k, n_k, y):
-        # self.mu_ = np.zeros((k, X.shape[1]))
-        # for i, label in enumerate(self.classes_):
-        #
-        #     # select and sum the rows i in X when y[i] = current label
-        #     X_relevant_rows = X[y == label]
-        #     sum_relevant_x = np.sum(X_relevant_rows, axis=0)
-        #     # calculate the MLE for the current label and add it to self.mu
-        #     self.mu_[i] = sum_relevant_x / n_k[i]
+
         temp_mu = []
         for i, label in enumerate(self.classes_):
 

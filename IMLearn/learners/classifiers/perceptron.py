@@ -87,7 +87,7 @@ class Perceptron(BaseEstimator):
                 if y[i] * (self.coefs_ @ X[i].T) <= 0:
                     self.coefs_ = self.coefs_ + y[i] * X[i]
                     is_made_change = True
-                    self.fitted_ = True # TODO haim ze kriti?
+                    self.fitted_ = True
                     self.callback_(self, X[i], y[i])
                     break
             if not is_made_change:
@@ -96,7 +96,7 @@ class Perceptron(BaseEstimator):
 
         self.fitted_ = True
 
-    def _predict(self, X: np.ndarray) -> np.ndarray:  # TODO add intercept
+    def _predict(self, X: np.ndarray) -> np.ndarray:
         """
         Predict responses for given samples using fitted estimator
 
@@ -111,7 +111,6 @@ class Perceptron(BaseEstimator):
             Predicted responses of given samples
         """
         if self.include_intercept_:
-            # return np.sign(np.dot(X, self.coefs_[1:]) + self.coefs_[0])
             return np.sign((X @ self.coefs_[1:]) + self.coefs_[0])
         return np.sign(self.coefs_ @ X.T)
 
