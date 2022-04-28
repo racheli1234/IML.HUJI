@@ -72,13 +72,14 @@ class GaussianNaiveBayes(BaseEstimator):
         self.vars_ = np.array(vars)
 
     def fit_mu(self, X, k, n_k, y):
-        self.mu_ = np.zeros((k, X.shape[1]))
+        temp_mu = []
         for i, label in enumerate(self.classes_):
             # select and sum the rows i in X when y[i] = current label
             X_relevant_rows = X[y == label]
             sum_relevant_x = np.sum(X_relevant_rows, axis=0)
             # calculate the MLE for the current label and add it to self.mu
-            self.mu_[i] = sum_relevant_x / n_k[i]
+            temp_mu.append(sum_relevant_x / n_k[i])
+        self.mu_ = np.array(temp_mu)
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """

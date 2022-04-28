@@ -73,12 +73,20 @@ class LDA(BaseEstimator):
         self.fitted_ = True
 
     def fit_cov_matrix(self, K, X, m, y):
-        self.cov_ = np.zeros((X.shape[1], X.shape[1]))
+        # self.cov_ = np.zeros((X.shape[1], X.shape[1]))
+        # for i in range(m):
+        #     k_index = np.where(self.classes_ == y[i])
+        #     mu_yi_MLE = self.mu_[k_index]
+        #     vec = X[i] - mu_yi_MLE
+        #     self.cov_ += (np.outer(vec, vec) / (m - K))
+
+        temp_cov = []
         for i in range(m):
             k_index = np.where(self.classes_ == y[i])
             mu_yi_MLE = self.mu_[k_index]
             vec = X[i] - mu_yi_MLE
-            self.cov_ += (np.outer(vec, vec) / (m - K))
+            temp_cov.append(np.outer(vec, vec) / (m - K))
+        self.cov_ = np.array(np.sum(temp_cov, axis=0))
 
     def fit_mu(self, X, k, n_k, y):
         # self.mu_ = np.zeros((k, X.shape[1]))

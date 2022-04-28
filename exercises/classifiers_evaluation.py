@@ -137,16 +137,31 @@ def compare_gaussian_classifiers():
                           trace=get_ellipse(lda.mu_[i], lda.cov_))
         fig.show()
 
+
 if __name__ == '__main__':
     np.random.seed(0)
-    import numpy as np
-    # run_perceptron()
-    # compare_gaussian_classifiers()
-    S = {(0, 0), (1, 0), (2, 1), (3, 1), (4, 1), (5, 1), (6, 2), (7, 2)}
-    X = np.array([0,1,2,3,4,5,6,7])
-    y = np.array([0, 0, 1, 1, 1, 1, 2, 2])
-    l = LDA()
-    l._fit(X,y)
-    print("mu: ", l.mu_)
-    print("pi: ", l.pi_)
+
+    run_perceptron()
+    compare_gaussian_classifiers()
+
+    # import numpy as np
+    # q1 quiz:
+    # S = {(0, 0), (1, 0), (2, 1), (3, 1), (4, 1), (5, 1), (6, 2), (7, 2)}
+    # X = np.array([0,1,2,3,4,5,6,7])
+    # y = np.array([0, 0, 1, 1, 1, 1, 2, 2])
+    # g = GaussianNaiveBayes()
+    # g._fit(X,y)
+    # print("mu: ", g.mu_)
+    # print("pi: ", g.pi_)
+
+    # q2 quiz:
+
+    # X2 = np.array([[1, 1], [1, 2], [2, 3], [2, 4], [3, 3], [3, 4]])
+    # y2 = np.array([0,0,1,1,1,1])
+    # g2 = GaussianNaiveBayes()
+    # g2._fit(X2, y2)
+    # print("mu: ", g2.mu_)
+    # print("pi: ", g2.pi_)
+    # print("vars: ", g2.vars_)
+
 
