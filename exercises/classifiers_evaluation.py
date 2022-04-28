@@ -154,12 +154,12 @@ if __name__ == '__main__':
     # print("pi: ", g.pi_)
 
     # q2 quiz:
-    X2 = np.array([[1, 1], [1, 2], [2, 3], [2, 4], [3, 3], [3, 4]])
-    y2 = np.array([0,0,1,1,1,1])
-    g2 = GaussianNaiveBayes()
-    g2._fit(X2, y2)
-    print("mu: ", g2.mu_)
-    print("pi: ", g2.pi_)
-    print("vars: ", g2.vars_)
+    # X2 = np.array([[1, 1], [1, 2], [2, 3], [2, 4], [3, 3], [3, 4]])
+    # y2 = np.array([0,0,1,1,1,1])
+    # g2 = GaussianNaiveBayes()
+    # g2._fit(X2, y2)
+    # print("mu: ", g2.mu_)
+    # print("pi: ", g2.pi_)
+    # print("vars: ", g2.vars_)
 
 
