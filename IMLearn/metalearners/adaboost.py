@@ -58,7 +58,7 @@ class AdaBoost(BaseEstimator):
             current_learner.fit(X, y * self.D_)
             epsilon_t = current_learner._loss(X, y * self.D_)
             w_t = np.log((1 / epsilon_t) - 1) / 2
-            self.D_ = self.D_ * np.exp(-1 * y * w_t * current_learner._predict(X))
+            self.D_ = self.D_ * np.exp(-1 *y * w_t * current_learner._predict(X))
             self.D_ /= np.sum(self.D_)
 
             self.models_.append(current_learner)
@@ -78,7 +78,7 @@ class AdaBoost(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
-        return self.partial_predict(X, len(self.models_))
+        return self.partial_predict(X, self.iterations_)
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -97,7 +97,7 @@ class AdaBoost(BaseEstimator):
         loss : float
             Performance under missclassification loss function
         """
-        return self.partial_loss(X, y, len(self.models_))
+        return self.partial_loss(X, y, self.iterations_)
 
     def partial_predict(self, X: np.ndarray, T: int) -> np.ndarray:
         """
@@ -118,7 +118,7 @@ class AdaBoost(BaseEstimator):
         """
         cur_sum = np.zeros(X.shape[0])
         for i in range(T):
-            cur_sum = cur_sum + self.weights_[i] * (self.models_[i]).predict(X)
+            cur_sum = cur_sum + (self.weights_[i] * (self.models_[i]).predict(X))
         return np.sign(cur_sum)
 
     def partial_loss(self, X: np.ndarray, y: np.ndarray, T: int) -> float:
@@ -142,4 +142,5 @@ class AdaBoost(BaseEstimator):
             Performance under missclassification loss function
         """
         from ..metrics.loss_functions import misclassification_error
+
         return misclassification_error(y, self.partial_predict(X, T))

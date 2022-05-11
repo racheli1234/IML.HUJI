@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Tuple, NoReturn
-from ...base import BaseEstimator
+from IMLearn import BaseEstimator
 import numpy as np
 from itertools import product
 
@@ -124,9 +124,9 @@ class DecisionStump(BaseEstimator):
         For every tested threshold, values strictly below threshold are predicted as `-sign` whereas values
         which equal to or above the threshold are predicted as `sign`
         """
-        values.sort()
-        labels = labels[values.argsort()]
-
+        sorted_indexes = values.argsort()
+        labels = labels[sorted_indexes]
+        values = values[sorted_indexes]
         current_loss = self.weighted_misclassification(np.ones(len(labels)) * sign, labels)
         threshold_index = 0
         final_loss = current_loss
@@ -135,7 +135,7 @@ class DecisionStump(BaseEstimator):
             # if the true label of the sample which we just put left to the threshold
             # (that is we labeled it as -sign) is sign, we add it to the loss:
             if 0 < i:
-                if labels[i - 1].sign() == sign:
+                if np.sign(labels[i - 1]) == sign:
                     current_loss += abs(labels[i - 1])
                 else:  # it means that before we change the threshold its label was wrong, and now it's true so we
                     # decrease the loss
@@ -149,7 +149,7 @@ class DecisionStump(BaseEstimator):
     def weighted_misclassification(self, y_pred: np.ndarray, y_true: np.ndarray):
         loss = 0
         for i in range(len(y_true)):
-            if np.sign(y_true) != np.sign(y_pred):
+            if np.sign(y_true[i]) != np.sign(y_pred[i]):
                 loss += abs(y_true[i])
 
         return loss
@@ -172,3 +172,12 @@ class DecisionStump(BaseEstimator):
             Performance under missclassification loss function
         """
         return self.weighted_misclassification(self._predict(X), y)
+
+if __name__ == '__main__':
+    stump = DecisionStump()
+    a = np.array(
+        [[1, 1], [2, 2], [4, 0], [5, 1], [6, 3], [7, 4], [8, 5], [9, 6],
+         [10, 7], [12, 8]])
+    b = np.array([-1, 1, -1, -1, 1, 1, 1, 1, 1, 1])
+    stump.fit(a, b)
+    print(stump.j_, stump.sign_, stump.threshold_)
