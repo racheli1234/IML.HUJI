@@ -172,12 +172,3 @@ class DecisionStump(BaseEstimator):
             Performance under missclassification loss function
         """
         return self.weighted_misclassification(self._predict(X), y)
-
-if __name__ == '__main__':
-    stump = DecisionStump()
-    a = np.array(
-        [[1, 1], [2, 2], [4, 0], [5, 1], [6, 3], [7, 4], [8, 5], [9, 6],
-         [10, 7], [12, 8]])
-    b = np.array([-1, 1, -1, -1, 1, 1, 1, 1, 1, 1])
-    stump.fit(a, b)
-    print(stump.j_, stump.sign_, stump.threshold_)

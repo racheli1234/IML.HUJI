@@ -56,7 +56,7 @@ class AdaBoost(BaseEstimator):
         for t in range(self.iterations_):
             current_learner = self.wl_()
             current_learner.fit(X, y * self.D_)
-            epsilon_t = current_learner._loss(X, y * self.D_)
+            epsilon_t = current_learner.loss(X, y * self.D_)
             w_t = np.log((1 / epsilon_t) - 1) / 2
             self.D_ = self.D_ * np.exp(-1 *y * w_t * current_learner._predict(X))
             self.D_ /= np.sum(self.D_)
