@@ -45,9 +45,9 @@ def fit_and_evaluate_adaboost(noise, n_learners=250, train_size=5000, test_size=
     ada = AdaBoost(wl=DecisionStump, iterations=n_learners)
     ada.fit(train_X, train_y)
 
-    train_losses = [ada.partial_loss(train_X, train_y, i) for i in range(1, 251)]
-    test_losses = [ada.partial_loss(test_X, test_y, i) for i in range(1, 251)]
-    x_arr = np.arange(1, 251)
+    train_losses = [ada.partial_loss(train_X, train_y, i) for i in range(1, n_learners)]
+    test_losses = [ada.partial_loss(test_X, test_y, i) for i in range(1, n_learners)]
+    x_arr = np.arange(1, n_learners + 1)
     fig1 = go.Figure([go.Scatter(x=x_arr, y=train_losses, name="train"),
                       go.Scatter(x=x_arr, y=test_losses, name="test")],
                      layout=dict(title="The training- and test errors as a function of the number of fitted "
