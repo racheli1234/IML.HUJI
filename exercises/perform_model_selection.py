@@ -39,7 +39,9 @@ def select_polynomial_degree(n_samples: int = 100, noise: float = 5):
     train_X, train_y, test_X, test_y = np.asarray(train_X), np.asarray(train_y), np.asarray(test_X), np.asarray(test_y)
     fig1 = go.Figure([go.Scatter(x=np.concatenate(train_X), y=train_y, name="train", mode="markers"),
                       go.Scatter(x=np.concatenate(test_X), y=test_y, name="test", mode="markers"),
-                      go.Scatter(x=X_samples, y=[f(x) for x in X_samples], name="noiseless", mode="markers")])
+                      go.Scatter(x=X_samples, y=[f(x) for x in X_samples], name="noiseless", mode="markers")],
+                     layout=dict(title=f"True (noiseless) samples, and train and test samples with noise level"
+                                       f"={noise}"))
     fig1.show()
 
     # Question 2 - Perform CV for polynomial fitting with degrees 0,1,...,10
@@ -53,14 +55,16 @@ def select_polynomial_degree(n_samples: int = 100, noise: float = 5):
         average_valid_errors.append(valid_err)
 
     fig2 = go.Figure([go.Scatter(x=np.arange(11), y=average_training_errors, name="average training errors"),
-                      go.Scatter(x=np.arange(11), y=average_valid_errors, name="average validation errors")])
+                      go.Scatter(x=np.arange(11), y=average_valid_errors, name="average validation errors")],
+                     layout=dict(title=f"The average training- and validation errors as a function of k in k-fold cv " \
+                                       f"algorithm - when samples with noise level={noise}"))
     fig2.show()
 
     # Question 3 - Using best value of k, fit a k-degree polynomial model and report test error
     k_star = int(np.argmin(average_valid_errors))
     poly = PolynomialFitting(k_star)
-    poly.fit(X_samples, y_samples)  # todo with noise or not?
-    test_err = poly.loss(np.concatenate(test_X), test_y)
+    poly.fit(X_samples, y_samples)
+    test_err = np.round(poly.loss(np.concatenate(test_X), test_y), decimals=2)
     print(f"k value: {k_star}, test error: {test_err}")
 
 
@@ -109,7 +113,9 @@ def select_regularization_parameter(n_samples: int = 50, n_evaluations: int = 50
     fig = go.Figure([go.Scatter(x=lam_range, y=train_errors_ridge, name="ridge - train"),
                      go.Scatter(x=lam_range, y=valid_errors_ridge, name="ridge - validation"),
                      go.Scatter(x=lam_range, y=train_errors_lasso, name="lasso - train"),
-                     go.Scatter(x=lam_range, y=valid_errors_lasso, name="lasso - validation")])
+                     go.Scatter(x=lam_range, y=valid_errors_lasso, name="lasso - validation")],
+                    layout=dict(title="Train- and validation errors as a function of the tested regularization "
+                                      "parameter value"))
     fig.show()
 
     # Question 8 - Compare best Ridge model, best Lasso model and Least Squares model
