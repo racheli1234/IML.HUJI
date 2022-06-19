@@ -46,12 +46,14 @@ def plot_descent_path(module: Type[BaseModule],
     fig = plot_descent_path(IMLearn.desent_methods.modules.L1, np.ndarray([[1,1],[0,0]]))
     fig.show()
     """
+
     def predict_(w):
         return np.array([module(weights=wi).compute_output() for wi in w])
 
     from utils import decision_surface
     return go.Figure([decision_surface(predict_, xrange=xrange, yrange=yrange, density=70, showscale=False),
-                      go.Scatter(x=descent_path[:, 0], y=descent_path[:, 1], mode="markers+lines", marker_color="black")],
+                      go.Scatter(x=descent_path[:, 0], y=descent_path[:, 1], mode="markers+lines",
+                                 marker_color="black")],
                      layout=go.Layout(xaxis=dict(range=xrange),
                                       yaxis=dict(range=yrange),
                                       title=f"GD Descent Path {title}"))
@@ -73,25 +75,56 @@ def get_gd_state_recorder_callback() -> Tuple[Callable[[], None], List[np.ndarra
     weights: List[np.ndarray]
         Recorded parameters
     """
-    raise NotImplementedError()
+    vals = []
+    weights = []
+
+    def callback(cur_w, cur_val):
+        vals.append(cur_val)
+        weights.append(cur_w)
+
+    return callback, vals, weights
 
 
 def compare_fixed_learning_rates(init: np.ndarray = np.array([np.sqrt(2), np.e / 3]),
                                  etas: Tuple[float] = (1, .1, .01, .001)):
-    raise NotImplementedError()
+
+    for module in [L1, L2]:
+        for eta in etas:
+            f = module(init.copy())
+            callback, values, weights = get_gd_state_recorder_callback()
+            lr = FixedLR(eta)
+            gd = GradientDescent(learning_rate=lr, callback=callback, out_type="last")
+            gd.fit(f=f, X=None, y=None)
+            print(f"lowest loss of {module.__name__} with eta = {eta}: {np.min(values)}")
+            plot_descent_path(module, np.array(weights), f"with eta = {eta}, module = {module.__name__}").show()
+            fig = go.Figure(data=[go.Scatter(x=np.arange(len(values)), y=values, mode="markers")])
+            fig.update_layout(title=f"Convergence rate of GD with module = {module.__name__}, eta = {eta}")
+            fig.show()
 
 
 def compare_exponential_decay_rates(init: np.ndarray = np.array([np.sqrt(2), np.e / 3]),
                                     eta: float = .1,
                                     gammas: Tuple[float] = (.9, .95, .99, 1)):
     # Optimize the L1 objective using different decay-rate values of the exponentially decaying learning rate
-    raise NotImplementedError()
+    all_vals = []
+    for gamma in gammas:
+        f = L1(init.copy())
+        callback, values, weights = get_gd_state_recorder_callback()
+        lr = ExponentialLR(base_lr=eta, decay_rate=gamma)
+        gd = GradientDescent(learning_rate=lr, callback=callback)
+        gd.fit(f=f, X=None, y=None)
+        all_vals.append(values)
+        if gamma == .95:
+            plot_descent_path(L1, np.array(weights), f"with gamma = 0.95, module = L1").show()
 
     # Plot algorithm's convergence for the different values of gamma
-    raise NotImplementedError()
+    fig = go.Figure(data=[go.Scatter(x=np.arange(len(all_vals[i])), y=all_vals[i]) for i in range(len(gammas))])
+    fig.update_layout(title="Convergence rate of L1 for all decay rates")
+    fig.show()
+    print([f"min loss of L1 with gamma = {gammas[i]}: {np.min(all_vals[i])}\n" for i in range(len(gammas))])
 
     # Plot descent path for gamma=0.95
-    raise NotImplementedError()
+    # in the for loop
 
 
 def load_data(path: str = "../datasets/SAheart.data", train_portion: float = .8) -> \
@@ -140,6 +173,6 @@ def fit_logistic_regression():
 
 if __name__ == '__main__':
     np.random.seed(0)
-    compare_fixed_learning_rates()
+    # compare_fixed_learning_rates()
     compare_exponential_decay_rates()
-    fit_logistic_regression()
+    # fit_logistic_regression()

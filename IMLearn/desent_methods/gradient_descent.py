@@ -39,6 +39,7 @@ class GradientDescent:
         Callable function receives as input any argument relevant for the current GD iteration. Arguments
         are specified in the `GradientDescent.fit` function
     """
+
     def __init__(self,
                  learning_rate: BaseLR = FixedLR(1e-3),
                  tol: float = 1e-5,
@@ -119,26 +120,48 @@ class GradientDescent:
                 Euclidean norm of w^(t)-w^(t-1)
 
         """
-        x_current = f.weights()
+        x_current = f.weights
         x_prev = x_current
-        x_best = x_current
+        best_x = x_current
+        best_val = f.compute_output()
         sum_results = x_current
         counter = 0
-        for t in range(self.max_iter_):
-            x_current = x_prev - self.learning_rate_.lr_step(t) * f.compute_jacobian(x_prev)
-
-            if f.compute_output(x_current) < f.compute_output(x_best):
-                x_best = x_current
+        for t in range(1, self.max_iter_):
+            counter = t
+            x_current = x_prev - self.learning_rate_.lr_step(t=t) * f.compute_jacobian(X=X, y=y)
+            f.weights = x_current
+            if f.compute_output() < best_val:
+                best_x = x_current
+                best_val = f.compute_output()
             sum_results += x_current
-            self.callback_(self)
+            self.callback_(cur_w=x_current, cur_val=f.compute_output())  # todo
 
             if np.linalg.norm(x_current - x_prev) <= self.tol_:
                 break
             x_prev = x_current
-            counter = t
 
         return {
             self.out_type_ == 'last': x_current,
-            self.out_type_ == 'best': x_best,
+            self.out_type_ == 'best': best_x,
             self.out_type_ == 'average': sum_results / counter
         }
+
+        # w = f.weights
+        # w_lst = [w]
+        # if self.out_type_ == "best":
+        #     erm_lst = [f.compute_output(X=X, y=y)]
+        # output_vector_dict = {"last": lambda x: x[-1],
+        #                       "best": lambda x: x[np.argmin(erm_lst)],
+        #                       "average": lambda x: np.sum(x) / len(x)}
+        # for t in range(self.max_iter_):
+        #     w_t = w - self.learning_rate_.lr_step(t=t) * f.compute_jacobian(X=X, y=y)
+        #     w_lst.append(w_t)
+        #     f.weights = w_t  # todo maybe not needed
+        #     if self.out_type_ == "best":
+        #         erm_lst.append(f.compute_output(x=X, y=y))
+        #     norm = np.linalg.norm(w_t - w)
+        #     self.callback_(cur_w=w_t, cur_val=f.compute_output(X=X, y=y))
+        #     w = w_t
+        #     if norm < self.tol_:
+        #         break
+        # return output_vector_dict[self.out_type_](w_lst)

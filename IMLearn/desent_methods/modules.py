@@ -50,7 +50,8 @@ class L2(BaseModule):
         output: ndarray of shape (n_in,)
             L2 derivative with respect to self.weights at point self.weights
         """
-        return self.weights  # TODO check - i did it according to the forum, that the derivative of ||x||^2 is 2x => x
+        return 2 * self.weights  # TODO check - i did it according to the forum, that the derivative of ||x||^2 is 2x
+        # => x
 
 
 class L1(BaseModule):

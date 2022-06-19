@@ -53,7 +53,7 @@ class ExponentialLR(FixedLR):
         """
         super().__init__(base_lr)
         self.decay_rate = decay_rate
-        # self.base_lr = base_lr ##
+        self.base_lr = base_lr ##
 
     def lr_step(self, t: int, **lr_kwargs) -> float:
         """
