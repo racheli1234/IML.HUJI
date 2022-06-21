@@ -118,7 +118,8 @@ def compare_exponential_decay_rates(init: np.ndarray = np.array([np.sqrt(2), np.
             plot_descent_path(L1, np.array(weights), f"with gamma = 0.95, module = L1").show()
 
     # Plot algorithm's convergence for the different values of gamma
-    fig = go.Figure(data=[go.Scatter(x=np.arange(len(all_vals[i])), y=all_vals[i]) for i in range(len(gammas))])
+    fig = go.Figure(data=[go.Scatter(x=np.arange(len(all_vals[i])), y=all_vals[i], name=f"gamma={gammas[i]}")
+                          for i in range(len(gammas))])
     fig.update_layout(title="Convergence rate of L1 for all decay rates")
     fig.show()
     print([f"min loss of L1 with gamma = {gammas[i]}: {np.min(all_vals[i])}\n" for i in range(len(gammas))])
