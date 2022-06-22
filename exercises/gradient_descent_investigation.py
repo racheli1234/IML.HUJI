@@ -10,6 +10,8 @@ from IMLearn.utils import split_train_test
 
 import plotly.graph_objects as go
 from sklearn.metrics import roc_curve, auc
+from IMLearn.metrics.loss_functions import misclassification_error
+
 
 def plot_descent_path(module: Type[BaseModule],
                       descent_path: np.ndarray,
@@ -87,7 +89,6 @@ def get_gd_state_recorder_callback() -> Tuple[Callable[[], None], List[np.ndarra
 
 def compare_fixed_learning_rates(init: np.ndarray = np.array([np.sqrt(2), np.e / 3]),
                                  etas: Tuple[float] = (1, .1, .01, .001)):
-
     for module in [L1, L2]:
         for eta in etas:
             f = module(init.copy())
@@ -177,12 +178,32 @@ def fit_logistic_regression():
                          yaxis=dict(title=r"$\text{True Positive Rate (TPR)}$")))
     fig.show()
 
+    best_alpha = np.round(thresholds[np.argmax(tpr - fpr)], 2)
+    print(best_alpha)
+
     # Plotting convergence rate of logistic regression over SA heart disease data
     # raise NotImplementedError()
 
     # Fitting l1- and l2-regularized logistic regression models, using cross-validation to specify values
     # of regularization parameter
-    # raise NotImplementedError()
+    from IMLearn.model_selection import cross_validate
+    lambdas = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1]
+
+    for L in ["l1", "l2"]:
+        valid_score_list = []
+        for lam in lambdas:
+            log = LogisticRegression(solver=GradientDescent(learning_rate=FixedLR(1e-4), max_iter=20000),
+                                     penalty=L, lam=lam)
+            train_score, valid_score = cross_validate(log, np.array(X_train), np.array(y_train),
+                                                      scoring=misclassification_error)
+            valid_score_list.append(valid_score)
+        best_lam_index = np.argmin(valid_score_list)
+        best_lam = lambdas[best_lam_index]
+        logistic_best_lam = LogisticRegression(solver=GradientDescent(learning_rate=FixedLR(1e-4), max_iter=20000),
+                                               penalty=L, lam=best_lam)
+        logistic_best_lam.fit(np.array(X_train), np.array(y_train))
+        test_err = logistic_best_lam.loss(np.array(X_test), np.array(y_test))
+        print(f"{L} model: Best lambda is {best_lam}. Test error is {test_err}")
 
 
 if __name__ == '__main__':
