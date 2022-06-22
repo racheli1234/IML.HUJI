@@ -9,7 +9,7 @@ from IMLearn.learners.classifiers.logistic_regression import LogisticRegression
 from IMLearn.utils import split_train_test
 
 import plotly.graph_objects as go
-
+from sklearn.metrics import roc_curve, auc
 
 def plot_descent_path(module: Type[BaseModule],
                       descent_path: np.ndarray,
@@ -164,16 +164,29 @@ def fit_logistic_regression():
     # Load and split SA Heard Disease dataset
     X_train, y_train, X_test, y_test = load_data()
 
+    logistic = LogisticRegression(solver=GradientDescent(learning_rate=FixedLR(1e-4), max_iter=20000))
+    logistic.fit(np.array(X_train), np.array(y_train))
+    fpr, tpr, thresholds = roc_curve(y_test, logistic.predict_proba(np.array(X_test)))
+    fig = go.Figure(
+        data=[go.Scatter(x=[0, 1], y=[0, 1], mode="lines", line=dict(color="black", dash='dash'),
+                         name="Random Class Assignment"),
+              go.Scatter(x=fpr, y=tpr, mode='markers+lines', text=thresholds, name="", showlegend=False, marker_size=5,
+                         hovertemplate="<b>Threshold:</b>%{text:.3f}<br>FPR: %{x:.3f}<br>TPR: %{y:.3f}")],
+        layout=go.Layout(title=rf"$\text{{ROC Curve Of Fitted Model - AUC}}={auc(fpr, tpr):.6f}$",
+                         xaxis=dict(title=r"$\text{False Positive Rate (FPR)}$"),
+                         yaxis=dict(title=r"$\text{True Positive Rate (TPR)}$")))
+    fig.show()
+
     # Plotting convergence rate of logistic regression over SA heart disease data
-    raise NotImplementedError()
+    # raise NotImplementedError()
 
     # Fitting l1- and l2-regularized logistic regression models, using cross-validation to specify values
     # of regularization parameter
-    raise NotImplementedError()
+    # raise NotImplementedError()
 
 
 if __name__ == '__main__':
     np.random.seed(0)
     # compare_fixed_learning_rates()
-    compare_exponential_decay_rates()
-    # fit_logistic_regression()
+    # compare_exponential_decay_rates()
+    fit_logistic_regression()

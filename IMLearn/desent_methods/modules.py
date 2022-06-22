@@ -135,7 +135,7 @@ class LogisticModule(BaseModule):
         output: ndarray of shape (1,)
             Value of function at point self.weights
         """
-        xi_dot_w = np.inner(X.T, self.weights)
+        xi_dot_w = np.inner(X, self.weights)
         part_1 = y * xi_dot_w
         part_2 = np.log(1 + np.exp(xi_dot_w))
         return -(1 / X.shape[0]) * np.sum(part_1 - part_2)

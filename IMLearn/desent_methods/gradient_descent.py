@@ -123,28 +123,34 @@ class GradientDescent:
         x_current = f.weights
         x_prev = x_current
         best_x = x_current
-        best_val = f.compute_output()
+        best_val = f.compute_output(X=X, y=y)
         sum_results = x_current
         counter = 0
         for t in range(1, self.max_iter_):
             counter = t
             x_current = x_prev - self.learning_rate_.lr_step(t=t) * f.compute_jacobian(X=X, y=y)
             f.weights = x_current
-            if f.compute_output() < best_val:
+            if f.compute_output(X=X, y=y) < best_val:
                 best_x = x_current
-                best_val = f.compute_output()
+                best_val = f.compute_output(X=X, y=y)
             sum_results += x_current
-            self.callback_(cur_w=x_current, cur_val=f.compute_output())  # todo
+            self.callback_(cur_w=x_current, cur_val=f.compute_output(X=X, y=y))  # todo
 
             if np.linalg.norm(x_current - x_prev) <= self.tol_:
                 break
             x_prev = x_current
 
-        return {
-            self.out_type_ == 'last': x_current,
-            self.out_type_ == 'best': best_x,
-            self.out_type_ == 'average': sum_results / counter
-        }
+        # return {
+        #     self.out_type_ == 'last': x_current,
+        #     self.out_type_ == 'best': best_x,
+        #     self.out_type_ == 'average': sum_results / counter
+        # }
+        if self.out_type_ == 'last':
+            return x_current
+        elif self.out_type_ == "best":
+            return best_x
+        elif self.out_type_ == 'average':
+            return sum_results / counter
 
         # w = f.weights
         # w_lst = [w]
