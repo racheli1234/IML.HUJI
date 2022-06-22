@@ -264,6 +264,6 @@ class RegularizedModule(BaseModule):
         self.weights_ = weights
         self.fidelity_module_.weights = weights
         if self.include_intercept_:
-            self.regularization_module_.weights = weights[1:]
+            self.regularization_module_.weights = weights[1:]  # TODO check
         else:
             self.regularization_module_.weights = weights
