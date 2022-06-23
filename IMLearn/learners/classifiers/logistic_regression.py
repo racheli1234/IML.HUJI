@@ -4,6 +4,7 @@ from IMLearn import BaseEstimator
 from IMLearn.desent_methods import GradientDescent, learning_rate
 from IMLearn.desent_methods.modules import LogisticModule, RegularizedModule, L1, L2
 
+
 class LogisticRegression(BaseEstimator):
     """
     Logistic Regression Classifier
@@ -135,7 +136,7 @@ class LogisticRegression(BaseEstimator):
         if self.include_intercept_:
             X = np.insert(X, 0, np.ones(len(X)), axis=1)
         y = X @ self.coefs_
-        sigmoid = 1 / (1+np.exp(-y))
+        sigmoid = 1 / (1 + np.exp(-y))
         return sigmoid
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:

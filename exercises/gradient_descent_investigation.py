@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 from typing import Tuple, List, Callable, Type
 
+import sklearn.model_selection
+
+import IMLearn
 from IMLearn import BaseModule
 from IMLearn.desent_methods import GradientDescent, FixedLR, ExponentialLR
 from IMLearn.desent_methods.modules import L1, L2
@@ -167,9 +170,9 @@ def fit_logistic_regression():
 
     logistic = LogisticRegression(solver=GradientDescent(learning_rate=FixedLR(1e-4), max_iter=20000))
     logistic.fit(np.array(X_train), np.array(y_train))
-    fpr, tpr, thresholds = roc_curve(y_test, logistic.predict_proba(np.array(X_test)))
+    fpr, tpr, thresholds = roc_curve(y_train, logistic.predict_proba(np.array(X_train)))
     fig = go.Figure(
-        data=[go.Scatter(x=[0, 1], y=[0, 1], mode="lines", line=dict(color="black", dash='dash'),
+        data=[go.Scatter(x=fpr, y=tpr, mode="lines", line=dict(color="black", dash='dash'),
                          name="Random Class Assignment"),
               go.Scatter(x=fpr, y=tpr, mode='markers+lines', text=thresholds, name="", showlegend=False, marker_size=5,
                          hovertemplate="<b>Threshold:</b>%{text:.3f}<br>FPR: %{x:.3f}<br>TPR: %{y:.3f}")],
@@ -179,10 +182,10 @@ def fit_logistic_regression():
     fig.show()
 
     best_alpha = np.round(thresholds[np.argmax(tpr - fpr)], 2)
-    print(best_alpha)
+    print("best alpha: ", best_alpha)
+    # print("Test error with the best alpha: ")
 
     # Plotting convergence rate of logistic regression over SA heart disease data
-    # raise NotImplementedError()
 
     # Fitting l1- and l2-regularized logistic regression models, using cross-validation to specify values
     # of regularization parameter
@@ -191,23 +194,25 @@ def fit_logistic_regression():
 
     for L in ["l1", "l2"]:
         valid_score_list = []
+        train_score_list = []
         for lam in lambdas:
             log = LogisticRegression(solver=GradientDescent(learning_rate=FixedLR(1e-4), max_iter=20000),
                                      penalty=L, lam=lam)
             train_score, valid_score = cross_validate(log, np.array(X_train), np.array(y_train),
                                                       scoring=misclassification_error)
             valid_score_list.append(valid_score)
+            train_score_list.append(train_score)
         best_lam_index = np.argmin(valid_score_list)
         best_lam = lambdas[best_lam_index]
-        logistic_best_lam = LogisticRegression(solver=GradientDescent(learning_rate=FixedLR(1e-4), max_iter=20000),
+        logistic_with_best_lam = LogisticRegression(solver=GradientDescent(learning_rate=FixedLR(1e-4), max_iter=20000),
                                                penalty=L, lam=best_lam)
-        logistic_best_lam.fit(np.array(X_train), np.array(y_train))
-        test_err = logistic_best_lam.loss(np.array(X_test), np.array(y_test))
+        logistic_with_best_lam.fit(np.array(X_train), np.array(y_train))
+        test_err = logistic_with_best_lam.loss(np.array(X_test), np.array(y_test))
         print(f"{L} model: Best lambda is {best_lam}. Test error is {test_err}")
 
 
 if __name__ == '__main__':
     np.random.seed(0)
-    # compare_fixed_learning_rates()
-    # compare_exponential_decay_rates()
+    compare_fixed_learning_rates()
+    compare_exponential_decay_rates()
     fit_logistic_regression()

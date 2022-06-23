@@ -51,8 +51,7 @@ class L2(BaseModule):
         output: ndarray of shape (n_in,)
             L2 derivative with respect to self.weights at point self.weights
         """
-        return 2 * self.weights  # TODO check - i did it according to the forum, that the derivative of ||x||^2 is 2x
-        # => x
+        return 2 * self.weights
 
 
 class L1(BaseModule):
@@ -235,7 +234,7 @@ class RegularizedModule(BaseModule):
         fid_derivative = self.fidelity_module_.compute_jacobian(**kwargs)
         reg_derivative = self.regularization_module_.compute_jacobian(**kwargs)
         if self.include_intercept_:
-            reg_derivative = np.insert(reg_derivative, 0, 0)  # TODO check
+            reg_derivative = np.insert(reg_derivative, 0, 0)
         return fid_derivative + self.lam_ * reg_derivative
 
     @property
@@ -265,6 +264,6 @@ class RegularizedModule(BaseModule):
         self.weights_ = weights
         self.fidelity_module_.weights = weights
         if self.include_intercept_:
-            self.regularization_module_.weights = weights[1:]  # TODO check
+            self.regularization_module_.weights = weights[1:]
         else:
             self.regularization_module_.weights = weights

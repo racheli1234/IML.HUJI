@@ -140,11 +140,6 @@ class GradientDescent:
                 break
             x_prev = x_current
 
-        # return {
-        #     self.out_type_ == 'last': x_current,
-        #     self.out_type_ == 'best': best_x,
-        #     self.out_type_ == 'average': sum_results / counter
-        # }
         if self.out_type_ == 'last':
             return x_current
         elif self.out_type_ == "best":
@@ -152,22 +147,4 @@ class GradientDescent:
         elif self.out_type_ == 'average':
             return sum_results / counter
 
-        # w = f.weights
-        # w_lst = [w]
-        # if self.out_type_ == "best":
-        #     erm_lst = [f.compute_output(X=X, y=y)]
-        # output_vector_dict = {"last": lambda x: x[-1],
-        #                       "best": lambda x: x[np.argmin(erm_lst)],
-        #                       "average": lambda x: np.sum(x) / len(x)}
-        # for t in range(self.max_iter_):
-        #     w_t = w - self.learning_rate_.lr_step(t=t) * f.compute_jacobian(X=X, y=y)
-        #     w_lst.append(w_t)
-        #     f.weights = w_t  # todo maybe not needed
-        #     if self.out_type_ == "best":
-        #         erm_lst.append(f.compute_output(x=X, y=y))
-        #     norm = np.linalg.norm(w_t - w)
-        #     self.callback_(cur_w=w_t, cur_val=f.compute_output(X=X, y=y))
-        #     w = w_t
-        #     if norm < self.tol_:
-        #         break
-        # return output_vector_dict[self.out_type_](w_lst)
+

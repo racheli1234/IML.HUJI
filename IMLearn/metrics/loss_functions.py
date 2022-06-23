@@ -36,14 +36,16 @@ def misclassification_error(y_true: np.ndarray, y_pred: np.ndarray, normalize: b
     -------
     Misclassification of given predictions
     """
-    wrong_pred_counter = 0
-    coor_product_vector = y_true * y_pred
-    for i in coor_product_vector:
-        if i < 0:
-            wrong_pred_counter += 1
-    if normalize:
-        return wrong_pred_counter / len(y_true)
-    return wrong_pred_counter
+    # wrong_pred_counter = 0
+    # coor_product_vector = y_true * y_pred
+    # for i in coor_product_vector:
+    #     if i < 0:
+    #         wrong_pred_counter += 1
+    # if normalize:
+    #     return wrong_pred_counter / len(y_true)
+    # return wrong_pred_counter
+    sum_wrongs = np.sum(y_true != y_pred)
+    return sum_wrongs / len(y_true) if normalize else sum_wrongs
 
 
 def accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
